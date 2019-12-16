@@ -17,11 +17,13 @@ test/the-files-to-test.generated.js
 chrome-user-data
 *.sublime-project
 *.sublime-workspace
+*.code-workspace
 .idea
 *.iml
 .vscode
 *.swp
 *.swo
+.env.development
 
 packages/react-devtools-core/dist
 packages/react-devtools-extensions/chrome/build
