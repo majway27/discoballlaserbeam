@@ -5,6 +5,31 @@
   <title>discoballlaserbeam</title>
 </head>
 <body>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/7.12.0/firebase-app.js"></script>
+
+  <!-- Add Firebase products that you want to use -->
+  <script src="https://www.gstatic.com/firebasejs/7.12.0/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.12.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.12.0/firebase-firestore.js"></script>
+
+  <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyBcKiqQvtbLDAo8sga509S6kUwu9VMLpN4",
+        authDomain: "discoballlaserbeam.firebaseapp.com",
+        databaseURL: "https://discoballlaserbeam.firebaseio.com",
+        projectId: "discoballlaserbeam",
+        storageBucket: "discoballlaserbeam.appspot.com",
+        messagingSenderId: "161414266746",
+        appId: "1:161414266746:web:9b782d43ed33dde9f8a0c3",
+        measurementId: "G-E8C3V850EP"
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      firebase.analytics();
+    </script>
+
   <script src="main.dart.js" type="application/javascript"></script>
 </body>
 </html>
