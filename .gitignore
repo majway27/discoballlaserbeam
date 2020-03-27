@@ -1,4 +1,7 @@
 .DS_STORE
+
+docs/_site
+
 node_modules
 scripts/flow/*/.flowconfig
 *~
