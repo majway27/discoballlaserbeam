@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 import '../common/customCard.dart';
+import '../common/sign_in.dart';
+
 
 class CaptainScreen extends StatefulWidget {
   static const String routeName = "/captainslog";
@@ -12,12 +16,17 @@ class CaptainScreen extends StatefulWidget {
 }
 
 class _MyCaptainState extends State<CaptainScreen> {
+  FirebaseUser currentUser;
   TextEditingController taskDescripInputController;
 
   @override
   initState() {
     taskDescripInputController = new TextEditingController();
-    //this.getCurrentUser();
+    getCurrentUser().then((result) => {
+      setState(() {
+        this.currentUser = result;
+      })
+    });
     super.initState();
   }
 
@@ -31,7 +40,10 @@ class _MyCaptainState extends State<CaptainScreen> {
         child: Container(
             padding: const EdgeInsets.all(10.0),
             child: StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance.collection('captainslog')
+              stream: Firestore.instance
+                  .collection('users')
+                  .document(currentUser.uid)
+                  .collection('captainslog')
                   .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -91,8 +103,8 @@ class _MyCaptainState extends State<CaptainScreen> {
               onPressed: () {
                 if (taskDescripInputController.text.isNotEmpty) {
                   Firestore.instance
-                      //.collection("users")
-                      //.document(widget.uid)
+                      .collection("users")
+                      .document(currentUser.uid)
                       .collection('captainslog')
                       .add({
                     "date": now,

@@ -1,15 +1,32 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:discoballlaserbeam/ui/screen/babynames.dart';
+
 import 'package:discoballlaserbeam/ui/screen/captainlog.dart';
 import 'package:discoballlaserbeam/ui/screen/finalcountdown.dart';
+import 'package:discoballlaserbeam/ui/screen/login.dart';
 import 'package:discoballlaserbeam/ui/screen/settings.dart';
+import '../common/sign_in.dart';
 
 class HomeScreen extends StatefulWidget {
+  static const String routeName = "/home";
+
   @override
-  HomeScreenState createState() => HomeScreenState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> {
+  FirebaseUser currentUser;
+
+  @override
+  initState() {
+    getCurrentUser().then((result) => {
+      setState(() {
+        this.currentUser = result;
+      })
+    });
+    super.initState();
+  }
+
   Drawer getNavDrawer(BuildContext context) {
     var headerChild = DrawerHeader(child: Text("Header"));
     var aboutChild = AboutListTile(
@@ -38,9 +55,9 @@ class HomeScreenState extends State<HomeScreen> {
       headerChild,
 
       getNavItem(Icons.home, "Home", "/"),
-      getNavItem(Icons.account_box, "Baby", BabyScreen.routeName),
       getNavItem(Icons.collections_bookmark, "Captain's Log", CaptainScreen.routeName),
       getNavItem(Icons.access_alarms, "Final Countdown", CountdownScreen.routeName),
+      getNavItem(Icons.lock_open, "Login/out", LoginScreen.routeName),
       getNavItem(Icons.settings, "Settings", SettingsScreen.routeName),
       aboutChild
     ];
@@ -54,13 +71,33 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (name == null) {
+      name = "New User";
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text("DiscoballLaserbeam"),
       ),
       body: Container(
-          child: Center(
-            child: Text("Home Screen"),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Text(
+                'NAME',
+                style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black54),
+              ),
+              Text(
+                name,
+                style: TextStyle(
+                    fontSize: 25,
+                    color: Colors.deepPurple,
+                    fontWeight: FontWeight.bold),
+              ),
+            ]
           )),
       // Set the nav drawer
       drawer: getNavDrawer(context),
