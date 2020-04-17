@@ -27,16 +27,11 @@ void main() {
       brightness: Brightness.dark,
       primaryColor: Color(0xFF0D1321),
       accentColor: Color(0xFF8E1B1B),
-
-      // Define the default font family.
-      fontFamily: 'Georgia',
-
-      // Define the default TextTheme. Use this to specify the default
-      // text styling for headlines, titles, bodies of text, and more.
+      fontFamily: 'Roboto',
       textTheme: TextTheme(
         headline: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
         title: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
-        body1: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
+        body1: TextStyle(fontSize: 14.0),
       ),
     )
   ));

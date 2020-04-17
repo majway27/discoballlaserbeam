@@ -19,8 +19,10 @@
 // SOFTWARE.
 
 import 'package:flutter/material.dart';
+
+import 'package:discoballlaserbeam/ui/screen/home.dart';
 import '../common/sign_in.dart';
-import '../common/first_screen.dart';
+
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = "/login";
@@ -58,7 +60,7 @@ class _LoginPageState extends State<LoginScreen> {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) {
-                return FirstScreen();
+                return HomeScreen();
               },
             ),
           );

@@ -18,10 +18,15 @@ class CaptainScreen extends StatefulWidget {
 class _MyCaptainState extends State<CaptainScreen> {
   FirebaseUser currentUser;
   TextEditingController taskDescripInputController;
+  Firestore db;
+  WriteBatch batch;
+  DocumentReference logRef, statRef;
+  int now;
 
   @override
   initState() {
     taskDescripInputController = new TextEditingController();
+
     getCurrentUser().then((result) => {
       setState(() {
         this.currentUser = result;
@@ -74,8 +79,18 @@ class _MyCaptainState extends State<CaptainScreen> {
     );
   }
 
+  Future <void> _runBatchWrite() async {
+    now = DateTime.now().millisecondsSinceEpoch;
+    db = Firestore.instance;
+    batch = db.batch();
+    logRef = db.collection("users").document(currentUser.uid).collection('captainslog').document();
+    statRef = db.collection("users").document(currentUser.uid).collection('stats').document('captainslog');
+    batch.setData(this.logRef, {"date": now, "entry": taskDescripInputController.text});
+    batch.updateData(this.statRef, {"entries": FieldValue.increment(1)});
+    batch.commit();
+  }
+
   _showDialog() async {
-    var now = DateTime.now().millisecondsSinceEpoch;
     await showDialog<String>(
       context: context,
       child: AlertDialog(
@@ -100,23 +115,14 @@ class _MyCaptainState extends State<CaptainScreen> {
               }),
           FlatButton(
               child: Text('Add'),
-              onPressed: () {
+              onPressed: () async {
                 if (taskDescripInputController.text.isNotEmpty) {
-                  Firestore.instance
-                      .collection("users")
-                      .document(currentUser.uid)
-                      .collection('captainslog')
-                      .add({
-                    "date": now,
-                    "entry": taskDescripInputController.text
-                  })
-                      .then((result) => {
-                    Navigator.pop(context),
-                    taskDescripInputController.clear(),
-                  })
-                      .catchError((err) => print(err));
-                }
-              })
+                  await _runBatchWrite();
+                  Navigator.pop(context);
+                  taskDescripInputController.clear();
+                } // If
+              } // onPressed
+          )
         ],
       ),
     );

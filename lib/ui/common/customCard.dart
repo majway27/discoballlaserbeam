@@ -4,6 +4,7 @@ import 'task.dart';
 
 class CustomCard extends StatelessWidget {
   CustomCard({@required this.date, this.entry});
+  List <Color> _colors = [Color(0xFF0D1321), Colors.transparent];
 
   final date;
   final entry;
@@ -13,8 +14,13 @@ class CustomCard extends StatelessWidget {
     return Card(
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey),
+            border: Border.all(color: Colors.grey[600]),
             borderRadius: BorderRadius.circular(5.0),
+            gradient: LinearGradient(
+              colors: _colors,
+              begin:  Alignment.topLeft,
+              end:  Alignment.bottomRight,
+            )
           ),
             child: Row(
               children: <Widget>[
@@ -45,7 +51,6 @@ class CustomCard extends StatelessWidget {
                       ],
                     ),
                     onPressed: () {
-                      /** Push a new page while passing data to it */
                       Navigator.push(
                           context,
                           MaterialPageRoute(
