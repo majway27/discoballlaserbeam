@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:discoballlaserbeam/ui/screen/captainlog.dart';
 import 'package:discoballlaserbeam/ui/screen/finalcountdown.dart';
 import 'package:discoballlaserbeam/ui/screen/home.dart';
 import 'package:discoballlaserbeam/ui/screen/login.dart';
 import 'package:discoballlaserbeam/ui/screen/settings.dart';
-import 'package:discoballlaserbeam/ui/common/sign_in.dart';
-import 'package:discoballlaserbeam/ui/screen/warmup.dart';
+import 'package:discoballlaserbeam/ui/common/base.dart';
+import 'package:discoballlaserbeam/data/services/auth.dart';
 
 
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: WarmupScreen(), // route for home is '/' implicitly
+    home: new BaseScreen(auth: new Auth()),
     routes: <String, WidgetBuilder>{
       // define the routes
       CaptainScreen.routeName: (BuildContext context) => CaptainScreen(),

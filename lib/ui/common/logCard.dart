@@ -1,9 +1,9 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'task.dart';
+import 'logEntry.dart';
 
-class CustomCard extends StatelessWidget {
-  CustomCard({@required this.date, this.entry});
+class LogCard extends StatelessWidget {
+  LogCard({@required this.date, this.entry});
   List <Color> _colors = [Color(0xFF0D1321), Colors.transparent];
 
   final date;
@@ -32,6 +32,11 @@ class CustomCard extends StatelessWidget {
                           color: Theme.of(context).accentColor,
                           height: 100,
                           width: 20,
+                          child: Icon(
+                            Icons.collections_bookmark,
+                            size: 15.0,
+                            color: Theme.of(context).primaryColor,
+                          ),
                         ),
                         Expanded(
                           flex: 3,
@@ -55,7 +60,7 @@ class CustomCard extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  TaskPage(
+                                  LogEntry(
                                       date: date, entry: entry)));
                     } //onPressed
                 )

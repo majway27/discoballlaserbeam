@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:discoballlaserbeam/ui/screen/login.dart';
-import  '../common/sign_in.dart';
+import 'package:discoballlaserbeam/data/services/auth.dart';
 
 
 class SettingsScreen extends StatelessWidget {
   static const String routeName = "/settings";
   List <Color> _colors = [Color(0xFF0D1321), Colors.transparent];
+  SettingsScreen({Key key, this.auth, this.uid}) : super(key: key);
+  final Auth auth;
+  final String uid;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +52,7 @@ class SettingsScreen extends StatelessWidget {
                                           margin: const EdgeInsets.all(10.0),
                                           child: CircleAvatar(
                                             backgroundImage: NetworkImage(
-                                              imageUrl,
+                                              auth.imageUrl,
                                             ),
                                             radius: 40,
                                             backgroundColor: Colors.transparent,
@@ -62,7 +65,7 @@ class SettingsScreen extends StatelessWidget {
                                                 Row(
                                                   children: <Widget>[
                                                     Text('Name:  '),
-                                                    Text(name,
+                                                    Text(auth.name,
                                                         style: TextStyle(
                                                             fontWeight: FontWeight.bold,
                                                             color: Colors.white)),
@@ -71,7 +74,7 @@ class SettingsScreen extends StatelessWidget {
                                                 Row(
                                                   children: <Widget>[
                                                     Text('Email:  '),
-                                                    Text(email,
+                                                    Text(auth.email,
                                                         style: TextStyle(
                                                             fontWeight: FontWeight.bold,
                                                             color: Colors.white)),
@@ -120,7 +123,7 @@ class SettingsScreen extends StatelessWidget {
                                     padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
                                     child: RaisedButton(
                                       onPressed: () {
-                                        signOutGoogle();
+                                        auth.signOutGoogle();
                                         Navigator.of(context).pushAndRemoveUntil(
                                             MaterialPageRoute(builder: (context) {
                                               return LoginScreen();

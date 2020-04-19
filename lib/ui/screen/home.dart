@@ -1,97 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 
 import 'package:discoballlaserbeam/ui/screen/captainlog.dart';
 import 'package:discoballlaserbeam/ui/screen/finalcountdown.dart';
-import 'package:discoballlaserbeam/ui/screen/login.dart';
 import 'package:discoballlaserbeam/ui/screen/settings.dart';
-import '../common/sign_in.dart';
+import 'package:discoballlaserbeam/data/services/auth.dart';
+import '../common/logCard.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = "/home";
+  HomeScreen({Key key, this.auth, this.uid, this.logoutCallback}) : super(key: key);
+  final Auth auth;
+  final VoidCallback logoutCallback;
+  final String uid;
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  FirebaseUser currentUser;
   List <Color> _colors = [Color(0xFF0D1321), Colors.transparent];
-  String captainlogEntryCountStat;
-  String captainlogLastEntryStat;
 
   @override
   initState() {
-    getCurrentUser().then((result) => {
-      setState(() {
-        this.currentUser = result;
-      }),
-      getStats().then((result) => {
-        setState(() {
-          this.captainlogEntryCountStat =
-              result.documents[0].data['entries'].toString();
-          this.captainlogLastEntryStat =
-              DateFormat('yyyy-MM-dd')
-                  .format(DateTime.fromMillisecondsSinceEpoch(
-                  result.documents[0].data['lastupdate']));
-        })
-      })
-    });
     super.initState();
-  }
-
-  Future <QuerySnapshot> getStats() async {
-    return await Firestore.instance
-        .collection('users')
-        .document(currentUser.uid)
-        .collection('stats')
-        .getDocuments();
-  }
-
-  Drawer getNavDrawer(BuildContext context) {
-    var headerChild = DrawerHeader(child: Text("Header"));
-
-    ListTile getNavItem(var icon, String s, String routeName) {
-      return ListTile(
-        leading: Icon(icon),
-        title: Text(s),
-        onTap: () {
-          setState(() {
-            // pop closes the drawer
-            Navigator.of(context).pop();
-            // navigate to the route
-            Navigator.of(context).pushNamed(routeName);
-          });
-        },
-      );
-    }
-
-    var myNavChildren = [
-      headerChild,
-      getNavItem(Icons.home, "Home", "/"),
-      getNavItem(Icons.collections_bookmark, "Captain's Log", CaptainScreen.routeName),
-      getNavItem(Icons.access_alarms, "Final Countdown", CountdownScreen.routeName),
-      getNavItem(Icons.settings, "Settings", SettingsScreen.routeName),
-    ];
-
-    ListView listView = ListView(children: myNavChildren);
-
-    return Drawer(
-      child: listView,
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (name == null) {
-      name = "New User";
-    }
-    if (captainlogEntryCountStat == null) {
-      captainlogLastEntryStat = 'Loading';
-      captainlogEntryCountStat = 'Loading';
-    }
     return Scaffold(
       appBar: AppBar(
         title: Text("DiscoballLaserbeam"),
@@ -120,6 +57,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color: Colors.grey[600],
                                   height: 50,
                                   width: 20,
+                                  child: Icon(
+                                      Icons.settings,
+                                      size: 15.0,
+                                      color: Theme.of(context).primaryColor,
+                                  ),
                                 ),
                                 Expanded(
                                   flex: 3,
@@ -135,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 Row(
                                                   children: <Widget>[
                                                     Text('Welcome,  '),
-                                                    Text(name,
+                                                    Text(widget.auth.name,
                                                         style: TextStyle(
                                                             fontWeight: FontWeight.bold,
                                                             color: Colors.white)),
@@ -155,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            SettingsScreen()));
+                                            SettingsScreen(auth: widget.auth, uid: widget.uid)));
                               } //onPressed
                           )
                       ),
@@ -183,6 +125,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color: Theme.of(context).accentColor,
                                   height: 90,
                                   width: 20,
+                                  child: Icon(
+                                    Icons.collections_bookmark,
+                                    size: 15.0,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
                                 ),
                                 Expanded(
                                   flex: 3,
@@ -208,10 +155,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     Text("Last Log Entry:  ",
                                                         style: TextStyle(
                                                           color: Colors.white)),
-                                                    Text(captainlogLastEntryStat,
-                                                        style: TextStyle(
-                                                            fontWeight: FontWeight.bold,
-                                                            color: Theme.of(context).accentColor)),
+                                                    StreamBuilder<QuerySnapshot>(
+                                                        stream: Firestore.instance.collection('users').document(widget.uid).collection('stats').snapshots(),
+                                                        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                                                          if(snapshot.data == null) return CircularProgressIndicator();
+                                                          return new Text(DateFormat('yyyy-MM-dd').format(DateTime.fromMillisecondsSinceEpoch(
+                                                              snapshot.data.documents[0].data['lastupdate'])),
+                                                              style: TextStyle(
+                                                                  fontWeight: FontWeight.bold,
+                                                                  color: Theme.of(context).accentColor)
+                                                          );
+                                                        }
+                                                    )
                                                   ],
                                                 ),
                                                 Row(
@@ -219,10 +174,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     Text("Total Entries:  ",
                                                         style: TextStyle(
                                                             color: Colors.white)),
-                                                    Text(captainlogEntryCountStat,
-                                                        style: TextStyle(
-                                                            fontWeight: FontWeight.bold,
-                                                            color: Theme.of(context).accentColor)),
+                                                    StreamBuilder<QuerySnapshot>(
+                                                      stream: Firestore.instance.collection('users').document(widget.uid).collection('stats').snapshots(),
+                                                      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                                                        if(snapshot.data == null) return CircularProgressIndicator();
+                                                        return new Text(snapshot.data.documents[0].data['entries'].toString(),
+                                                            style: TextStyle(
+                                                                fontWeight: FontWeight.bold,
+                                                                color: Theme.of(context).accentColor)
+                                                        );
+                                                      }
+                                                    )
                                                   ],
                                                 ),
                                               ]
@@ -239,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            CaptainScreen()));
+                                            CaptainScreen(uid: widget.uid)));
                               } //onPressed
                           )
                       ),
@@ -248,8 +210,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           )),
-      // Set the nav drawer
-      drawer: getNavDrawer(context),
     );
   }
 }

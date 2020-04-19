@@ -2,13 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../common/customCard.dart';
-import '../common/sign_in.dart';
+import '../common/logCard.dart';
+import 'package:discoballlaserbeam/data/services/auth.dart';
 
 
 class CaptainScreen extends StatefulWidget {
   static const String routeName = "/captainslog";
-
+  CaptainScreen({Key key, this.uid}) : super(key: key);
+  final String uid;
+  
   @override
   _MyCaptainState createState() {
     return _MyCaptainState();
@@ -26,12 +28,6 @@ class _MyCaptainState extends State<CaptainScreen> {
   @override
   initState() {
     taskDescripInputController = new TextEditingController();
-
-    getCurrentUser().then((result) => {
-      setState(() {
-        this.currentUser = result;
-      })
-    });
     super.initState();
   }
 
@@ -47,7 +43,7 @@ class _MyCaptainState extends State<CaptainScreen> {
             child: StreamBuilder<QuerySnapshot>(
               stream: Firestore.instance
                   .collection('users')
-                  .document(currentUser.uid)
+                  .document(widget.uid)
                   .collection('captainslog')
                   .snapshots(),
               builder: (BuildContext context,
@@ -61,7 +57,7 @@ class _MyCaptainState extends State<CaptainScreen> {
                     return new ListView(
                       children: snapshot.data.documents
                           .map((DocumentSnapshot document) {
-                        return new CustomCard(
+                        return new LogCard(
                           date: document['date'],
                           entry: document['entry'],
                         );
@@ -83,8 +79,8 @@ class _MyCaptainState extends State<CaptainScreen> {
     now = DateTime.now().millisecondsSinceEpoch;
     db = Firestore.instance;
     batch = db.batch();
-    logRef = db.collection("users").document(currentUser.uid).collection('captainslog').document();
-    statRef = db.collection("users").document(currentUser.uid).collection('stats').document('captainslog');
+    logRef = db.collection("users").document(widget.uid).collection('captainslog').document();
+    statRef = db.collection("users").document(widget.uid).collection('stats').document('captainslog');
     batch.setData(this.logRef, {"date": now, "entry": taskDescripInputController.text});
     batch.updateData(this.statRef, {"entries": FieldValue.increment(1)});
     batch.commit();
